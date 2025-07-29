@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Age Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+            outline: none;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #333;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .age-highlight {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .age-highlight h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .age-highlight p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.2rem;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 25px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-control {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+
+            .btn-calculate {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+
+            .age-highlight h3 {
+                font-size: 1.5rem;
+            }
+
+            .result-value {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .result-value {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <h1><i class="bi bi-calendar-heart"></i> Age Calculator</h1>
+            <p>Discover your exact age with precision</p>
+        </div>
+
+        <form id="ageForm">
+            <div class="form-group">
+                <label for="birthDate" class="form-label">
+                    <i class="bi bi-calendar3"></i>
+                    Date of Birth
+                </label>
+                <div class="input-group">
+                    <input type="date" class="form-control" id="birthDate" required>
+                    <i class="bi bi-calendar-check input-icon"></i>
+                </div>
+                <div class="error-message" id="birthDateError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="currentDate" class="form-label">
+                    <i class="bi bi-calendar-today"></i>
+                    Calculate Age As Of (Optional)
+                </label>
+                <div class="input-group">
+                    <input type="date" class="form-control" id="currentDate">
+                    <i class="bi bi-calendar-day input-icon"></i>
+                </div>
+                <div class="error-message" id="currentDateError"></div>
+            </div>
+
+            <button type="submit" class="btn btn-calculate">
+                <i class="bi bi-calculator"></i>
+                Calculate My Age
+            </button>
+        </form>
+
+        <div class="result-container" id="resultContainer">
+            <div class="age-highlight">
+                <h3 id="mainAge"></h3>
+                <p>Your Current Age</p>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="bi bi-calendar-range"></i>
+                    Years
+                </span>
+                <span class="result-value" id="years">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="bi bi-calendar-month"></i>
+                    Months
+                </span>
+                <span class="result-value" id="months">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="bi bi-calendar-week"></i>
+                    Days
+                </span>
+                <span class="result-value" id="days">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="bi bi-clock"></i>
+                    Total Days
+                </span>
+                <span class="result-value" id="totalDays">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="bi bi-stopwatch"></i>
+                    Total Hours
+                </span>
+                <span class="result-value" id="totalHours">0</span>
+            </div>
+
+            <div class="result-item">
+                <span class="result-label">
+                    <i class="bi bi-hourglass-split"></i>
+                    Total Minutes
+                </span>
+                <span class="result-value" id="totalMinutes">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('ageForm');
+            const birthDateInput = document.getElementById('birthDate');
+            const currentDateInput = document.getElementById('currentDate');
+            const resultContainer = document.getElementById('resultContainer');
+
+            // Set current date as default with proper formatting
+            const today = new Date();
+            const todayString = today.getFullYear() + '-' + 
+                String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                String(today.getDate()).padStart(2, '0');
+            
+            currentDateInput.value = todayString;
+            birthDateInput.max = todayString;
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateAge();
+            });
+
+            function calculateAge() {
+                clearErrors();
+                
+                if (!birthDateInput.value) {
+                    showError('birthDateError', 'Please select your birth date');
+                    return;
+                }
+
+                const birthDate = new Date(birthDateInput.value + 'T00:00:00');
+                const currentDate = currentDateInput.value ? 
+                    new Date(currentDateInput.value + 'T00:00:00') : 
+                    new Date();
+
+                // Validation
+                if (isNaN(birthDate.getTime())) {
+                    showError('birthDateError', 'Please enter a valid birth date');
+                    return;
+                }
+
+                if (birthDate > currentDate) {
+                    showError('birthDateError', 'Birth date cannot be in the future');
+                    return;
+                }
+
+                // Calculate age
+                const age = getAge(birthDate, currentDate);
+                displayResults(age);
+            }
+
+            function getAge(birthDate, currentDate) {
+                let years = currentDate.getFullYear() - birthDate.getFullYear();
+                let months = currentDate.getMonth() - birthDate.getMonth();
+                let days = currentDate.getDate() - birthDate.getDate();
+
+                // Adjust for negative days
+                if (days < 0) {
+                    months--;
+                    const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                    days += lastMonth.getDate();
+                }
+
+                // Adjust for negative months
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                // Calculate totals with proper handling
+                const millisecondsPerDay = 1000 * 60 * 60 * 24;
+                const totalDays = Math.floor((currentDate - birthDate) / millisecondsPerDay);
+                const totalHours = totalDays * 24;
+                const totalMinutes = totalHours * 60;
+
+                return {
+                    years: Math.max(0, years),
+                    months: Math.max(0, months),
+                    days: Math.max(0, days),
+                    totalDays: Math.max(0, totalDays),
+                    totalHours: Math.max(0, totalHours),
+                    totalMinutes: Math.max(0, totalMinutes)
+                };
+            }
+
+            function displayResults(age) {
+                document.getElementById('mainAge').textContent = `${age.years} Years Old`;
+                document.getElementById('years').textContent = age.years;
+                document.getElementById('months').textContent = age.months;
+                document.getElementById('days').textContent = age.days;
+                document.getElementById('totalDays').textContent = age.totalDays.toLocaleString();
+                document.getElementById('totalHours').textContent = age.totalHours.toLocaleString();
+                document.getElementById('totalMinutes').textContent = age.totalMinutes.toLocaleString();
+
+                resultContainer.classList.add('show');
+            }
+
+            function showError(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                }
+            }
+
+            function clearErrors() {
+                const errorElements = document.querySelectorAll('.error-message');
+                errorElements.forEach(element => {
+                    element.style.display = 'none';
+                    element.textContent = '';
+                });
+            }
+
+            // Real-time validation with better error handling
+            birthDateInput.addEventListener('change', function() {
+                if (this.value) {
+                    try {
+                        const birthDate = new Date(this.value + 'T00:00:00');
+                        const today = new Date();
+                        
+                        if (isNaN(birthDate.getTime())) {
+                            showError('birthDateError', 'Please enter a valid date');
+                        } else if (birthDate > today) {
+                            showError('birthDateError', 'Birth date cannot be in the future');
+                        } else {
+                            clearErrors();
+                        }
+                    } catch (e) {
+                        showError('birthDateError', 'Please enter a valid date');
+                    }
+                }
+            });
+
+            currentDateInput.addEventListener('change', function() {
+                if (this.value && birthDateInput.value) {
+                    try {
+                        const birthDate = new Date(birthDateInput.value + 'T00:00:00');
+                        const selectedDate = new Date(this.value + 'T00:00:00');
+                        
+                        if (isNaN(selectedDate.getTime())) {
+                            showError('currentDateError', 'Please enter a valid date');
+                        } else if (birthDate > selectedDate) {
+                            showError('currentDateError', 'Selected date cannot be before birth date');
+                        } else {
+                            clearErrors();
+                        }
+                    } catch (e) {
+                        showError('currentDateError', 'Please enter a valid date');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
